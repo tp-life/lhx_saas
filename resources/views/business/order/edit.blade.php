@@ -43,7 +43,9 @@
 
         <!-- 基本信息 -->
         <div class="row">
-            <form>
+            <form method="POST" action="{{url('business/order', ['id'=>$order->order_id])}}" class="form-horizontal">
+                {{csrf_field()}}
+                {{method_field('PUT')}}
                 <div class="panel panel-default" style="border-top: none;border-radius:0">
                     <div class="panel-heading" style="font-size: 14px;overflow: auto">
                         <div class="row">
@@ -55,7 +57,8 @@
                                 <div style="line-height: 25px">{{ $order->retail_business_name  }}</div>
                             </div>
                             <div class="col-lg-3 hadlder">
-                                <button class="btn btn-xb btn-info tooltips" type="button">保存</button>
+                                <button class="btn btn-xb btn-info tooltips" type="submit"><i class="fa fa-paper-plane-o"></i>保存</button>
+                                <a class="btn btn-white" href="{{url('business/order/'.$order->order_id)}}" ><i class="fa fa-reply"></i>返回</a>
                             </div>
                         </div>
 
@@ -85,19 +88,19 @@
                                     </div>
                                 </td>
                                 <td>{{$item->goods_spec}}</td>
-                                <td>{{number_format($item->goods_price, 2)}}</td>
-                                <td><input value="{{$item->goods_num}}" price="{{$item->goods_price}}" name="goodsNum[{{$item->id}}]" class="form-control form-filter" style="width: 60px;" onkeyup="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'')}else{this.value=this.value.replace(/\D/g,'');}" onafterpaste="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'')}else{this.value=this.value.replace(/\D/g,'')}" placeholder="1" /></td>
-                                <td>{{number_format($item->goods_pay_price, 2)}}</td>
-                                <td><a data-original-title="删除" data-id="5" class="btn btn-xb tooltips destroy_item" href="javascript:;"><i class="fa fa-trash"></i></a></td>
+                                <td>￥{{number_format($item->goods_price, 2)}}</td>
+                                <td><input AUTOCOMPLETE="off" value="{{$item->goods_num}}" price="{{$item->goods_price}}" name="goodsNum[{{$item->id}}]" class="form-control form-filter goodsNum" style="width: 60px;" onkeyup="int(this)" onafterpaste="int(this)"  placeholder="1" /></td>
+                                <td>￥{{number_format($item->goods_pay_price, 2)}}</td>
+                                <td><a data-original-title="删除" data-id="{{$item->id}}" class="btn btn-xb tooltips destroy_item" href="javascript:;"><i class="fa fa-trash"></i></a></td>
                             </tr>
                             @endforeach
                             <tr>
                                 <td colspan="3" style="line-height: 56px;">
-                                    货款：￥<span>{{ $order->goods_amount}}</span>   +   运费：￥<input value="{{ $order->shipping_fee}}" name="shipping_fee" class="form-control form-filter" style="width: 60px;display: inline-block" onkeyup="shipping_fee_onkeyup(this)" />  —  优惠：￥<input value="{{ $order->discount_amount}}" name="discount_amount" class="form-control form-filter" style="width: 60px;display: inline-block" onkeyup="" />
+                                    货款：￥<span id="goods_amount">{{ $order->goods_amount}}</span>   +   运费：￥<input AUTOCOMPLETE="off" value="{{ $order->shipping_fee}}" name="shipping_fee" id="shipping_fee" class="form-control form-filter" style="width: 100px;display: inline-block" onkeyup="xiaoshu(this)" onafterpaste="xiaoshu(this)" />  —  优惠：￥<input AUTOCOMPLETE="off" value="{{ $order->discount_amount}}" name="discount_amount" id="discount_amount" class="form-control form-filter" style="width: 100px;display: inline-block" onkeyup="xiaoshu(this)" onafterpaste="xiaoshu(this)" />
                                 </td>
                                 <td></td>
                                 <td></td>
-                                <td><h2 style="color: red">总价：￥{{ number_format($order->order_amount,2)}}</h2></td>
+                                <td><h2 style="color: red">总价：￥<span id="order_amount">{{ number_format($order->order_amount,2)}}</span></h2></td>
                             </tr>
                             </tbody>
                         </table>
@@ -123,8 +126,121 @@
         $(".modal").on("hidden.bs.modal",function(e){
             $(this).removeData("bs.modal");
         });
-        function shipping_fee_onkeyup(obj){
-            this.value = this.value.replace(/\D/g,'');
+        $(document).on('blur', 'input', function(e){
+           jisuan();
+        });
+        $('.destroy_item').click(function(){
+            var obj = $(this);
+            layer.confirm('删除后该商品将无法购买了，您还要删除吗？', {
+                btn: ['删除','取消'] //按钮
+            }, function(){
+                $.ajax({
+                    type:'POST',
+                    url:'{{url("business/order/del_goods")}}',
+                    data:{_token:'{{csrf_token()}}',id:obj.attr('data-id')},
+                    dataType:'json',
+                    success:function (response) {
+                        if (response.status == 1) {
+                            obj.parents('tr').remove();
+                            jisuan();
+                        } else {
+                            layer.msg(response.msg ? response.msg : '操作失败', function(){});
+                        }
+                    }
+                });
+            }, function(){
+            });
+
+        });
+        function jisuan(){
+            //计算商品总价
+            var goods_amount = 0;
+            $('.goodsNum').each(function(){
+                int(this);
+                var obj = $(this);
+                var val = obj.val();
+                val = val ? val : 1;
+                goods_amount = add(goods_amount , val*obj.attr('price'));
+            });
+            goods_amount = goods_amount.toFixed(2);
+            $('#goods_amount').html(goods_amount);
+            var discount_amount = $('#discount_amount').val();
+            var shipping_fee = $('#shipping_fee').val();
+            if (discount_amount >= add(shipping_fee , goods_amount)){
+                $('#discount_amount').val(add(shipping_fee , goods_amount))
+                $('#order_amount').html(0.00);
+            } else {
+                $('#order_amount').html(sub(add(shipping_fee , goods_amount), discount_amount).toFixed(2));
+            }
+        }
+        function xiaoshu(obj){
+            obj.value = obj.value.replace(/[^\d.]/g,"");  //清除“数字”和“.”以外的字符
+            obj.value = obj.value.replace(/^\./g,"");  //验证第一个字符是数字而不是.
+            obj.value = obj.value.replace(/\.{2,}/g,"."); //只保留第一个. 清除多余的
+            obj.value = obj.value.replace(".","$#$").replace(/\./g,"").replace("$#$",".");
+            obj.value=obj.value.replace(/^(\-)*(\d+)\.(\d\d).*$/,'$1$2.$3');//只能输入两个小数
+            if (obj.value == '') {
+                obj.value = 0;
+            }
+        }
+        function int(obj){
+            obj.value = obj.value.replace(/[^\d]/g,"");  //清除“数字”和“.”以外的字符
+            if (obj.value == '' || obj.value == 0) {
+                obj.value = 1;
+            }
+        }
+        function add(a, b) {
+            var c, d, e;
+            try {
+                c = a.toString().split(".")[1].length;
+            } catch (f) {
+                c = 0;
+            }
+            try {
+                d = b.toString().split(".")[1].length;
+            } catch (f) {
+                d = 0;
+            }
+            return e = Math.pow(10, Math.max(c, d)), (mul(a, e) + mul(b, e)) / e;
+        }
+
+        function sub(a, b) {
+            var c, d, e;
+            try {
+                c = a.toString().split(".")[1].length;
+            } catch (f) {
+                c = 0;
+            }
+            try {
+                d = b.toString().split(".")[1].length;
+            } catch (f) {
+                d = 0;
+            }
+            return e = Math.pow(10, Math.max(c, d)), (mul(a, e) - mul(b, e)) / e;
+        }
+        function mul(a, b) {
+            var c = 0,
+                    d = a.toString(),
+                    e = b.toString();
+            try {
+                c += d.split(".")[1].length;
+            } catch (f) {}
+            try {
+                c += e.split(".")[1].length;
+            } catch (f) {}
+            return Number(d.replace(".", "")) * Number(e.replace(".", "")) / Math.pow(10, c);
+        }
+
+        function div(a, b) {
+            var c, d, e = 0,
+                    f = 0;
+            try {
+                e = a.toString().split(".")[1].length;
+            } catch (g) {}
+            try {
+                f = b.toString().split(".")[1].length;
+            } catch (g) {}
+            return c = Number(a.toString().replace(".", "")), d = Number(b.toString().replace(".", "")), mul(c / d, Math.pow(10, f - e));
         }
     </script>
 @stop

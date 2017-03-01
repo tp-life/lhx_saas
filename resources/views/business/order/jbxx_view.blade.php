@@ -29,6 +29,7 @@
         </div>
     </div>
     <div class="wrapper wrapper-content animated fadeInRight">
+        @include('flash::message')
        <div class="row">
            <ul class="nav nav-tabs">
                @foreach ($flag_a as $v)
@@ -89,9 +90,9 @@
 
                                 </td>
                             <td>{{$item->goods_spec}}</td>
-                            <td>{{number_format($item->goods_price, 2)}}</td>
+                            <td>￥{{number_format($item->goods_price, 2)}}</td>
                             <td>{{$item->goods_num}}</td>
-                            <td>{{number_format($item->goods_pay_price, 2)}}</td>
+                            <td>￥{{number_format($item->goods_pay_price, 2)}}</td>
                         </tr>
                         @endforeach
                         <tr>

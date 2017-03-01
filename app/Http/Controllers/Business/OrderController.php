@@ -6,7 +6,9 @@ use App\Models\Common\Order;
 use App\Models\Common\OrderGoods;
 use App\Service\Admin\OrderService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
+use League\Flysystem\Exception;
 
 class OrderController extends Controller
 {
@@ -322,6 +324,36 @@ class OrderController extends Controller
     }
 
     /**
+     * 删除商品
+     */
+    public function del_goods(){
+        $id = request('id', 0);
+        $order_goods = OrderGoods::findOrFail($id);
+        $order = Order::where([
+            ['order_id',$order_goods->order_id],
+            ['business_id',$this->business_id]
+        ])->where(function ($query) { //线上支付的，未付款前
+            $query->orWhere([
+                ['pay_state', Order::_ORDER_PAY_STATE_DEFAULT],
+                ['payment_type', Order::_PAY_TYPE_XS]
+            ])->orWhere(function ($query) { //线上支付的，未付款前
+                $query->where([
+                    ['pay_state', Order::_ORDER_PAY_STATE_DEFAULT],
+                    ['payment_type', '<>', Order::_PAY_TYPE_XS]
+                ]);
+            });
+        })->firstOrFail();
+        //查询该订单是否还有其他商品
+        $count = OrderGoods::where('order_id', $order_goods->order_id)->count();
+        if ($count == 1) {
+            return $this->error('该订单只有这个商品了，不可删除');
+        }
+        if (!$order_goods->delete()) {
+            return $this->error('操作失败');
+        }
+        return $this->success('操作成功');
+    }
+    /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -330,7 +362,59 @@ class OrderController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $order = Order::where([
+            ['order_id',$id],
+            ['business_id',$this->business_id]
+        ])->where(function ($query) { //线上支付的，未付款前
+            $query->orWhere([
+                ['pay_state', Order::_ORDER_PAY_STATE_DEFAULT],
+                ['payment_type', Order::_PAY_TYPE_XS]
+            ])->orWhere(function ($query) { //线上支付的，未付款前
+                $query->where([
+                    ['pay_state', Order::_ORDER_PAY_STATE_DEFAULT],
+                    ['payment_type', '<>', Order::_PAY_TYPE_XS]
+                ]);
+            });
+        })->firstOrFail();
+        $goods = $request->input('goodsNum', []);
+        if (empty($goods)) {
+            flash_info(false ,'保存成功', '保存失败');
+            return redirect('business/order/'.$id);
+        }
+        try{
+            \DB::beginTransaction();
+            //得到所有商品
+            $goodsList = OrderGoods::where('order_id', $id)->whereIn('id', array_keys($goods))->get();
+            if (empty($goods)) {
+                flash_info(false ,'保存成功', '保存失败');
+                return redirect('business/order/'.$id);
+            }
+            $goods_price = 0;
+            foreach($goodsList as $item){
+                $item->goods_num = max(1, intval($goods[$item->id]));
+                $item->goods_pay_price = number_format($item->goods_num*$item->goods_price, 2, '.', '');
+                $goods_price += $item->goods_pay_price*100;
+                if (!$item->save()) {
+                    throw new Exception('保存失败');
+                }
+            }
+            OrderGoods::where('order_id', $id)->whereNotIn('id', array_keys($goods))->delete();
+            $goods_price = $goods_price/100;
+            $order->goods_amount = $goods_price;
+            $order->shipping_fee = number_format($request->input('shipping_fee', 0), 2, '.', '');
+            $order->discount_amount = number_format($request->input('discount_amount', 0), 2, '.', '');
+            $order_amount = ($order->goods_amount*100 + $order->shipping_fee*100 - $order->discount_amount*100)/100;
+            $order->order_amount = number_format($order_amount, 2, '.', '');
+            if (!$order->save()) {
+                throw new Exception('保存失败');
+            }
+            \DB::commit();
+            flash_info(true ,'保存成功', '保存失败');
+        } catch (Exception $e) {
+            \DB::rollBack();
+            flash_info(false ,'保存成功', '保存失败');
+        }
+        return redirect('business/order/'.$id);
     }
 
     /**

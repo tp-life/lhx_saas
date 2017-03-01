@@ -20,6 +20,7 @@ $router->group(['prefix' => 'order'],function ($router)
     $router->post('update_address','OrderController@update_address')->name('order.update_address');
     $router->get('review/{id}','OrderController@review')->name('order.review');
     $router->post('update_review','OrderController@update_review')->name('order.update_review');
+    $router->post('del_goods','OrderController@del_goods')->name('order.del_goods');
 
 });
 $router->resource('order','OrderController');
