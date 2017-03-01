@@ -100,6 +100,15 @@ class GoodsController extends BusinessController
     public function create(Request $request)
     {
         $data = $this->_getCreateData();
+        $seller_id = getBusinessId();
+        $spec = ClassattrModel::where([['business_id',$seller_id],['is_select',ClassattrModel::_TEMPLATE_ON],['status',ClassattrModel::_STATUS_START]])->groupBy('title','class_id')->get()->toArray();
+        if($spec){
+            $temp = [];
+            foreach ($spec as $val) {
+                $temp[] = ['attribute_name' => $val['attribute_name'], 'attribute_value' => $val['attribute_value'],'title'=>$val['title']];
+            }
+            $data['attr'] = $temp;
+        }
         return view('business.goods.add')->with($data);
     }
 
@@ -637,7 +646,6 @@ class GoodsController extends BusinessController
                         ->orWhere('goods_no', 'like', '%' . $value . '%')
                         ->orWhere('goods_category', 'like', '%' . $value . '%');
                 });
-
             } else {
                 $model->where('goods_name', 'like', '%' . $value . '%');
             }
@@ -667,5 +675,4 @@ class GoodsController extends BusinessController
         }
         return $model;
     }
-
 }

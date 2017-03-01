@@ -14,8 +14,13 @@ class ClassattrModel extends Model
     public $action = 'tradeattr';//表格操作按钮
     protected $fillable = ['class_id','attribute_name','attribute_value','business_id','status','title'];
 
+    // 属性状态 1 启用 2 禁用
     const _STATUS_START = 1;
     const _STATUS_STOP = 2;
+
+    //商家是否默认模板 1是 0 否
+    const _TEMPLATE_ON = 1;
+    const _TEMPLATE_OFF = 0;
 
     /**
      * 获取状态html

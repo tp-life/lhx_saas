@@ -142,14 +142,14 @@
                                     <div class="col-sm-10">
                                         <div class="col-sm-3 col-md-2">
                                             <div class="i-checks">
-                                                <label> <input type="radio" name="spec_type" checked value="{{\App\Models\Common\GoodsCommonModel::_SPEC_ONE}}"> <i></i>&nbsp;
+                                                <label> <input type="radio" name="spec_type" @if(!isset($attr)) checked @endif value="{{\App\Models\Common\GoodsCommonModel::_SPEC_ONE}}"> <i></i>&nbsp;
                                                     单规格 </label>
                                             </div>
                                         </div>
                                         <div class="col-sm-6 col-md-3">
                                             <div class="col-sm-5">
                                                 <div class="i-checks">
-                                                    <label> <input type="radio" name="spec_type" value="{{\App\Models\Common\GoodsCommonModel::_SPEC_MORE}}"> <i></i>&nbsp;
+                                                    <label> <input type="radio" name="spec_type" @if(isset($attr)) checked @endif  value="{{\App\Models\Common\GoodsCommonModel::_SPEC_MORE}}"> <i></i>&nbsp;
                                                         多规格 </label>
                                                 </div>
                                             </div>
@@ -157,7 +157,7 @@
                                                 <select class="form-control" name="spec_id" id="spec" >
                                                     <option value="">选择多规格模板</option>
                                                     @foreach($spec as $val)
-                                                        <option value="{{$val->id}}">{{$val->title}}</option>
+                                                        <option value="{{$val->id}}" @if(isset($attr) && $attr[0]['title'] == $val->title ) selected @endif >{{$val->title}}</option>
                                                     @endforeach
                                                     <option value="add">添加多规格模板</option>
                                                 </select>
@@ -165,7 +165,7 @@
 
                                         </div>
                                     </div>
-                                    <div class="col-sm-10 col-sm-offset-2" id="show_spec" style="margin-top: 15px">
+                                    <div class="col-sm-10 col-sm-offset-2 @if(isset($attr)) hide @endif " id="show_spec" style="margin-top: 15px">
                                         <div class="show_attr col-sm-11" >
                                             <table class="table  table-bordered table-hover">
                                                 <thead>
@@ -210,9 +210,39 @@
                                             </table>
                                         </div>
                                     </div>
-                                    <div class="col-sm-10 col-sm-offset-2 hide " style="margin-top: 18px"  id="show_more_spec">
+                                    <div class="col-sm-10 col-sm-offset-2 @if(!isset($attr)) hide @endif " style="margin-top: 18px"  id="show_more_spec">
+                                        @if(isset($attr))
+                                            <div class="alert alert-success">
+                                                @foreach($attr as $k=>$v)
+                                                    <div class="form-group">
+                                                        <label class="col-sm-1 control-label">{{$v['attribute_name']}}</label><input
+                                                                type="hidden" name="spec_attr[{{$k}}]"
+                                                                value="{{$v['attribute_name']}}">
+                                                        <div class="col-sm-10">
+                                                            @php $spec_p = explode(',',$v['attribute_value']) @endphp
+                                                            @foreach($spec_p as $kk=>$vv)
+                                                                <div class="col-sm-2">
+                                                                    <div class="i-box-checks">
+                                                                        <label><input type="checkbox"
+                                                                                      class="spec_real_val"
+                                                                                      name="spec_val[{{$k}}][{{$kk}}]"
+                                                                                      data-index="{{$k}}"
+                                                                                      data-key="{{$kk}}"
+                                                                                      value="{{$vv}}"></label>&nbsp;
+                                                                        &nbsp;
+                                                                        <span class="show_spec_val"><span
+                                                                                    ondblclick="spec_edit( '{{$vv}}',this)">{{$vv}}</span></span>
+                                                                    </div>
+                                                                </div>
+                                                            @endforeach
+                                                        </div>
+                                                    </div>
+                                                    <div class="hr-line-dashed"></div>
+                                                @endforeach
+                                            </div>
+                                        @endif
                                     </div>
-                                    <div class="col-sm-10 col-sm-offset-2 hide " style="margin-top: 18px"  id="show_more_goods">
+                                    <div class="col-sm-10 col-sm-offset-2 @if(!isset($attr)) hide @endif " style="margin-top: 18px"  id="show_more_goods">
                                         <div class="col-sm-11">
                                             <table class="table  table-bordered table-hover">
                                                 <thead>

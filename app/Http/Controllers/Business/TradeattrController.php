@@ -41,6 +41,10 @@ class tradeattrController extends BusinessController
     public function store(Request $request){
         $post = $request->all();
         $data=[];
+        $is_select = $request->input('is_select',ClassattrModel::_TEMPLATE_OFF);
+        if($is_select && $this->checkTemplate()){
+            return $this->error('当前已设置默认模板，请先取消之前所设置的默认模板');
+        }
         foreach ($post['attr_name'] as $key=>$val){
             $data[]=[
                 'title'=>$post['attribute_name'],
@@ -48,6 +52,7 @@ class tradeattrController extends BusinessController
                 'attribute_name'=>$val,
                 'business_id'=>getBusinessId(),
                 'attribute_value'=>join(',',$post['attr_val'][$key]),
+                'is_select'=>$is_select,
                 'created_at'=>date('Y-m-d H:i:s'),
                 'updated_at'=>date('Y-m-d H:i:s')
             ];
@@ -93,11 +98,14 @@ class tradeattrController extends BusinessController
             $action =['getBusinessShowActionButton'=>true,'getBusinessEditActionButton'=>'','getBusinessDestroyAjaxButton'=>"deleted({$val->id})",'getBusinessChangeActionButton'=>$btn_status];
             $btn = $val->getBusinessActionButton($action);
             $class = ClassificationModel::getInfo([['id',$val->class_id]]);
+            $name = $val -> title;
+            if($val->is_select == ClassattrModel::_TEMPLATE_ON){
+                $name .='&nbsp;&nbsp;<span style="color: red">【默认】</span>';
+            }
             $data['data'][]=[
                 'ck'=>'<input type="checkbox" name="checkbox" value="'.$val->id.'" />',
-                'name'=>$val->title,
+                'name'=>$name,
                 'class'=>$class?$class->name:'',
-                'status'=>ClassattrModel::getStatusHtml($val->status),
                 'status'=>ClassattrModel::getStatusHtml($val->status),
                 'action'=>$btn
             ];
@@ -136,7 +144,12 @@ class tradeattrController extends BusinessController
             abort(404,'访问错误.');
         }
         DB::beginTransaction();
+
         try{
+            $is_select = $request->input('is_select',ClassattrModel::_TEMPLATE_OFF);
+            if($is_select && $this->checkTemplate()){
+                return $this->error('当前已设置默认模板，请先取消之前所设置的默认模板');
+            }
             $model =new ClassattrModel();
             $ids=explode(',',$request->ids);
             $save_id=[];
@@ -145,6 +158,7 @@ class tradeattrController extends BusinessController
                 $bstop = $model->where('id',$key)->update([
                     'title'=>$request->attribute_name,
                     'class_id'=>getBusinessTradeId(),
+                    'is_select'=>$is_select,
                     'attribute_name'=>$val,
                     'attribute_value'=>join(',',$request->save_attr_val[$key]),
                     'updated_at'=>date('Y-m-d H:i:s')
@@ -167,6 +181,7 @@ class tradeattrController extends BusinessController
                     'class_id'=>getBusinessTradeId(),
                     'attribute_name'=>$val,
                     'attribute_value'=>join(',',$request->attr_val[$key]),
+                    'is_select'=>$request->input('is_select',ClassattrModel::_TEMPLATE_OFF),
                     'busines_id'=>getBusinessId(),
                     'created_at'=>date('Y-m-d H:i:s'),
                     'updated_at'=>date('Y-m-d H:i:s')
@@ -201,6 +216,9 @@ class tradeattrController extends BusinessController
         $result=ClassattrModel::find($request->id);
         if(!$result){
             return $this->error('操作失败,该规格属性不存在');
+        }
+        if($result ->is_select && $this->checkTemplate()){
+            return $this->error('当前已设置默认模板，请先取消之前所设置的默认模板');
         }
         if( ClassattrModel::where([['title',$result->title],['class_id',$result->class_id]])->update(['status'=>$request->status])){
             return $this->success('操作成功');
@@ -241,6 +259,19 @@ class tradeattrController extends BusinessController
             $map[$val->id]=['name'=>$val->attribute_name,'id'=>$val->id,'value'=>explode(',',$val->attribute_value)];
         }
         return view('business.tradeattr.show',['model'=>$map,'trade'=>$trade,'info'=>$result,'ids'=>join(',',array_keys($map))]);
+    }
+
+    /**
+     * 检查是否有默认模板设置
+     * @return bool
+     *
+     */
+    private  function checkTemplate(){
+        $seller_id = getBusinessId();
+        if(ClassattrModel::where([['business_id',$seller_id],['is_select',ClassattrModel::_TEMPLATE_ON],['status',ClassattrModel::_STATUS_START]])->groupBy('title','class_id')->first()){
+            return true;
+        }
+        return false;
     }
 
     /**

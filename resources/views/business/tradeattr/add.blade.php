@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 @section('css')
-
+    <link href="{{asset('vendors/iCheck/custom.css')}}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -43,6 +43,16 @@
                                     <div class="col-sm-10">
                                         <input type="text" class="form-control" required id="title" name='attribute_name'
                                                placeholder="规格属性名称">
+                                    </div>
+                                </div>
+                                <div class="hr-line-dashed"></div>
+                                <div class="form-group">
+                                    <label for="title" class="col-sm-2 control-label">默认模板</label>
+                                    <div class="col-sm-10">
+                                        <div class="i-checks">
+                                            <label> <input type="checkbox" name="is_select" value="{{\App\Models\Common\ClassattrModel::_TEMPLATE_ON}}"> <i></i>&nbsp;
+                                                作为默认模板 </label>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="hr-line-dashed"></div>
@@ -94,6 +104,7 @@
 @endsection
 
 @section('js')
+    <script type="text/javascript" src="{{asset('vendors/iCheck/icheck.min.js')}}"></script>
     <script type="text/javascript" src="{{asset('vendors/jquery.form.js')}}"></script>
     <script>
         var index = 0;
@@ -111,6 +122,11 @@
                 });
                 return false;
             });
+
+            $('.i-checks').iCheck({
+                checkboxClass: 'icheckbox_square-green',
+                radioClass: 'iradio_square-green'
+            })
         });
         
         function  createAttr() {
