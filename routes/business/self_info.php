@@ -1,0 +1,30 @@
+<?php
+$router->group(['prefix' => 'self_info'],function ($router)
+{
+    //编辑商家信息
+    $router->get('/','SelfInfoController@index')->name('self_info.business_info');
+    $router->get('/business_info','SelfInfoController@business_info')->name('self_info.business_info');
+    $router->post('/business_info_update','SelfInfoController@business_info_update')->name('self_info.business_info_update');
+    //修改绑定手机
+    $router->get('/bind_mobile','SelfInfoController@bind_mobile')->name('self_info.bind_mobile');
+    $router->get('/bind_mobile_step_one','SelfInfoController@bind_mobile_step_one')->name('self_info.bind_mobile_step_one')->middleware('business_edit_bind_mobile');
+    $router->post('/bind_mobile_get_old_phone_code','SelfInfoController@bind_mobile_get_old_phone_code')->name('self_info.bind_mobile_get_old_phone_code')->middleware('business_edit_bind_mobile');
+    $router->post('/bind_mobile_check_old_phone_code','SelfInfoController@bind_mobile_check_old_phone_code')->name('self_info.bind_mobile_check_old_phone_code')->middleware('business_edit_bind_mobile');
+    $router->get('/bind_mobile_step_two','SelfInfoController@bind_mobile_step_two')->name('self_info.bind_mobile_step_two')->middleware('business_edit_bind_new_mobile');
+    $router->get('/bind_mobile_check_new_phone','SelfInfoController@bind_mobile_check_new_phone')->name('self_info.bind_mobile_check_new_phone')->middleware('business_edit_bind_new_mobile');
+    $router->get('/bind_mobile_get_new_phone_code','SelfInfoController@bind_mobile_get_new_phone_code')->name('self_info.bind_mobile_get_new_phone_code')->middleware('business_edit_bind_new_mobile');
+    $router->post('/bind_mobile_update','SelfInfoController@bind_mobile_update')->name('self_info.bind_mobile_update')->middleware('business_edit_bind_new_mobile');
+    //发货地址
+    $router->get('/receive_address','SelfInfoController@receive_address')->name('self_info.receive_address');
+    $router->post('/receive_address_update','SelfInfoController@receive_address_update')->name('self_info.receive_address_update');
+    //物流设置
+    $router->get('/logistics','SelfInfoController@logistics')->name('self_info.logistics');
+    $router->post('/logistics_add','SelfInfoController@logistics_add')->name('self_info.logistics_add');
+    $router->any('/logistics_default','SelfInfoController@logistics_default')->name('self_info.logistics_default');
+    $router->post('/logistics_edit','SelfInfoController@logistics_edit')->name('self_info.logistics_edit');
+    $router->post('/logistics_open','SelfInfoController@logistics_open')->name('self_info.logistics_open');
+    $router->any('/artificial_distribution','SelfInfoController@artificial_distribution')->name('self_info.artificial_distribution');
+    $router->post('/logistics_del','SelfInfoController@logistics_del')->name('self_info.logistics_del');
+
+});
+//$router->resource('retail_business','RetailBusinessController');

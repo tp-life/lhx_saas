@@ -1,0 +1,184 @@
+0 info it worked if it ends with ok
+1 verbose cli [ 'C:\\Program Files\\nodejs\\node.exe',
+1 verbose cli   'C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js',
+1 verbose cli   'install',
+1 verbose cli   '-g',
+1 verbose cli   'n' ]
+2 info using npm@2.14.4
+3 info using node@v4.1.1
+4 verbose install initial load of C:\Users\john\AppData\Roaming\npm\package.json
+5 verbose readDependencies loading dependencies from C:\Users\john\AppData\Roaming\npm\package.json
+6 silly cache add args [ 'n', null ]
+7 verbose cache add spec n
+8 silly cache add parsed spec Result {
+8 silly cache add   raw: 'n',
+8 silly cache add   scope: null,
+8 silly cache add   name: 'n',
+8 silly cache add   rawSpec: '',
+8 silly cache add   spec: '*',
+8 silly cache add   type: 'range' }
+9 silly addNamed n@*
+10 verbose addNamed "*" is a valid semver range for n
+11 silly addNameRange { name: 'n', range: '*', hasData: false }
+12 silly mapToRegistry name n
+13 silly mapToRegistry using default registry
+14 silly mapToRegistry registry https://registry.npmjs.org/
+15 silly mapToRegistry uri https://registry.npmjs.org/n
+16 verbose addNameRange registry:https://registry.npmjs.org/n not in flight; fetching
+17 verbose request uri https://registry.npmjs.org/n
+18 verbose request no auth needed
+19 info attempt registry request try #1 at 11:07:53
+20 verbose request id 00542fc626d592f8
+21 verbose etag W/"587dc763-fa44"
+22 verbose lastModified Tue, 17 Jan 2017 07:27:31 GMT
+23 http request GET https://registry.npmjs.org/n
+24 http 304 https://registry.npmjs.org/n
+25 silly get cb [ 304,
+25 silly get   { date: 'Fri, 20 Jan 2017 03:06:48 GMT',
+25 silly get     via: '1.1 varnish',
+25 silly get     'cache-control': 'max-age=300',
+25 silly get     etag: 'W/"587dc763-fa44"',
+25 silly get     age: '120',
+25 silly get     connection: 'keep-alive',
+25 silly get     'x-served-by': 'cache-sjc3633-SJC',
+25 silly get     'x-cache': 'HIT',
+25 silly get     'x-cache-hits': '1',
+25 silly get     'x-timer': 'S1484881608.345231,VS0,VE0',
+25 silly get     vary: 'Accept-Encoding' } ]
+26 verbose etag https://registry.npmjs.org/n from cache
+27 verbose get saving n to C:\Users\john\AppData\Roaming\npm-cache\registry.npmjs.org\n\.cache.json
+28 silly addNameRange number 2 { name: 'n', range: '*', hasData: true }
+29 silly addNameRange versions [ 'n',
+29 silly addNameRange   [ '0.0.1',
+29 silly addNameRange     '0.0.2',
+29 silly addNameRange     '0.0.3',
+29 silly addNameRange     '0.0.4',
+29 silly addNameRange     '0.1.0',
+29 silly addNameRange     '0.1.1',
+29 silly addNameRange     '0.1.2',
+29 silly addNameRange     '0.2.0',
+29 silly addNameRange     '0.2.1',
+29 silly addNameRange     '0.2.2',
+29 silly addNameRange     '0.3.0',
+29 silly addNameRange     '0.4.0',
+29 silly addNameRange     '0.4.1',
+29 silly addNameRange     '0.4.2',
+29 silly addNameRange     '0.5.0',
+29 silly addNameRange     '0.5.1',
+29 silly addNameRange     '0.5.2',
+29 silly addNameRange     '0.5.3',
+29 silly addNameRange     '0.5.4',
+29 silly addNameRange     '0.6.0',
+29 silly addNameRange     '0.6.1',
+29 silly addNameRange     '0.7.0',
+29 silly addNameRange     '0.7.1',
+29 silly addNameRange     '0.7.2',
+29 silly addNameRange     '0.7.3',
+29 silly addNameRange     '0.8.0',
+29 silly addNameRange     '0.8.1',
+29 silly addNameRange     '0.8.2',
+29 silly addNameRange     '0.9.0',
+29 silly addNameRange     '0.9.1',
+29 silly addNameRange     '0.9.2',
+29 silly addNameRange     '0.9.3',
+29 silly addNameRange     '1.0.0',
+29 silly addNameRange     '1.1.0',
+29 silly addNameRange     '1.2.1',
+29 silly addNameRange     '1.2.2',
+29 silly addNameRange     '1.2.3',
+29 silly addNameRange     '1.2.4',
+29 silly addNameRange     '1.2.5',
+29 silly addNameRange     '1.2.6',
+29 silly addNameRange     '1.2.7',
+29 silly addNameRange     '1.2.8',
+29 silly addNameRange     '1.2.9',
+29 silly addNameRange     '1.2.11',
+29 silly addNameRange     '1.2.13',
+29 silly addNameRange     '1.2.14',
+29 silly addNameRange     '1.3.0',
+29 silly addNameRange     '1.4.0',
+29 silly addNameRange     '2.0.0',
+29 silly addNameRange     '1.4.1',
+29 silly addNameRange     '2.0.1',
+29 silly addNameRange     '1.4.2',
+29 silly addNameRange     '2.0.2',
+29 silly addNameRange     '2.1.0',
+29 silly addNameRange     '2.1.1',
+29 silly addNameRange     '2.1.2',
+29 silly addNameRange     '2.1.3',
+29 silly addNameRange     '2.1.4' ] ]
+30 silly addNamed n@2.1.4
+31 verbose addNamed "2.1.4" is a plain semver version for n
+32 silly cache afterAdd n@2.1.4
+33 verbose afterAdd C:\Users\john\AppData\Roaming\npm-cache\n\2.1.4\package\package.json not in flight; writing
+34 verbose afterAdd C:\Users\john\AppData\Roaming\npm-cache\n\2.1.4\package\package.json written
+35 silly install resolved [ { name: 'n',
+35 silly install resolved     description: 'Interactively Manage All Your Node Versions',
+35 silly install resolved     version: '2.1.4',
+35 silly install resolved     author: { name: 'TJ Holowaychuk', email: 'tj@vision-media.ca' },
+35 silly install resolved     homepage: 'https://github.com/tj/n',
+35 silly install resolved     bugs: { url: 'https://github.com/tj/n/issues' },
+35 silly install resolved     contributors: [ [Object], [Object], [Object] ],
+35 silly install resolved     keywords:
+35 silly install resolved      [ 'nvm',
+35 silly install resolved        'node',
+35 silly install resolved        'version',
+35 silly install resolved        'manager',
+35 silly install resolved        'switcher',
+35 silly install resolved        'node',
+35 silly install resolved        'binary',
+35 silly install resolved        'env' ],
+35 silly install resolved     bin: { n: './bin/n' },
+35 silly install resolved     repository: { type: 'git', url: 'git://github.com/tj/n.git' },
+35 silly install resolved     preferGlobal: true,
+35 silly install resolved     os: [ '!win32' ],
+35 silly install resolved     engines: { node: '*' },
+35 silly install resolved     license: 'MIT',
+35 silly install resolved     gitHead: 'ff9ba303d972069903c0f951ece43f47adce24e8',
+35 silly install resolved     _id: 'n@2.1.4',
+35 silly install resolved     scripts: {},
+35 silly install resolved     _shasum: '7546bc467a120cc96718f2716cd86c43290f94c5',
+35 silly install resolved     _from: 'n@*',
+35 silly install resolved     _npmVersion: '3.10.3',
+35 silly install resolved     _nodeVersion: '6.3.1',
+35 silly install resolved     _npmUser: { name: 'qw3rtman', email: 'me@nimit.io' },
+35 silly install resolved     dist:
+35 silly install resolved      { shasum: '7546bc467a120cc96718f2716cd86c43290f94c5',
+35 silly install resolved        tarball: 'https://registry.npmjs.org/n/-/n-2.1.4.tgz' },
+35 silly install resolved     maintainers: [ [Object], [Object], [Object], [Object], [Object], [Object] ],
+35 silly install resolved     _npmOperationalInternal:
+35 silly install resolved      { host: 'packages-16-east.internal.npmjs.com',
+35 silly install resolved        tmp: 'tmp/n-2.1.4.tgz_1470600124670_0.21058935346081853' },
+35 silly install resolved     directories: {},
+35 silly install resolved     _resolved: 'https://registry.npmjs.org/n/-/n-2.1.4.tgz',
+35 silly install resolved     readme: 'ERROR: No README data found!' } ]
+36 info install n@2.1.4 into C:\Users\john\AppData\Roaming\npm
+37 info installOne n@2.1.4
+38 verbose installOne of n to C:\Users\john\AppData\Roaming\npm not in flight; installing
+39 verbose lock using C:\Users\john\AppData\Roaming\npm-cache\_locks\n-933ffa9f2a2ab411.lock for C:\Users\john\AppData\Roaming\npm\node_modules\n
+40 verbose unlock done using C:\Users\john\AppData\Roaming\npm-cache\_locks\n-933ffa9f2a2ab411.lock for C:\Users\john\AppData\Roaming\npm\node_modules\n
+41 verbose stack Error: Unsupported
+41 verbose stack     at checkPlatform (C:\Program Files\nodejs\node_modules\npm\node_modules\npm-install-checks\index.js:47:14)
+41 verbose stack     at Array.<anonymous> (C:\Program Files\nodejs\node_modules\npm\node_modules\slide\lib\bind-actor.js:15:8)
+41 verbose stack     at LOOP (C:\Program Files\nodejs\node_modules\npm\node_modules\slide\lib\chain.js:15:14)
+41 verbose stack     at C:\Program Files\nodejs\node_modules\npm\node_modules\slide\lib\chain.js:18:7
+41 verbose stack     at checkEngine (C:\Program Files\nodejs\node_modules\npm\node_modules\npm-install-checks\index.js:26:10)
+41 verbose stack     at Array.<anonymous> (C:\Program Files\nodejs\node_modules\npm\node_modules\slide\lib\bind-actor.js:15:8)
+41 verbose stack     at LOOP (C:\Program Files\nodejs\node_modules\npm\node_modules\slide\lib\chain.js:15:14)
+41 verbose stack     at chain (C:\Program Files\nodejs\node_modules\npm\node_modules\slide\lib\chain.js:20:5)
+41 verbose stack     at C:\Program Files\nodejs\node_modules\npm\lib\install.js:1038:5
+41 verbose stack     at C:\Program Files\nodejs\node_modules\npm\lib\utils\locker.js:39:7
+42 verbose pkgid n@2.1.4
+43 verbose cwd F:\test\ex_l53_iDashboard
+44 error Windows_NT 6.1.7601
+45 error argv "C:\\Program Files\\nodejs\\node.exe" "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js" "install" "-g" "n"
+46 error node v4.1.1
+47 error npm  v2.14.4
+48 error code EBADPLATFORM
+49 error notsup Unsupported
+49 error notsup Not compatible with your operating system or architecture: n@2.1.4
+49 error notsup Valid OS:    !win32
+49 error notsup Valid Arch:  any
+49 error notsup Actual OS:   win32
+49 error notsup Actual Arch: x64
+50 verbose exit [ 1, true ]
