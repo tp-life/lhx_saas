@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Requests\UnitRequest;
 use App\Models\Common\ClassificationModel;
 use App\Models\Common\UnitModel;
 use Illuminate\Http\Request;
@@ -29,7 +30,7 @@ class UnitController extends Controller
     /**
      * 添加
      */
-    public function store(Request $request){
+    public function store(UnitRequest $request){
         if(!$request->ajax()){
             abort(404,'非发访问');
         }
@@ -104,7 +105,7 @@ class UnitController extends Controller
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function update(Request $request){
+    public function update(UnitRequest $request){
 
         if(!$request->isMethod('post') || !$request->ajax()){
             abort(404,'访问错误.');

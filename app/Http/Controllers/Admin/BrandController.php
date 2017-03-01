@@ -37,7 +37,7 @@ class BrandController extends Controller
     /**
      * 添加
      */
-    public function store(Request $request){
+    public function store(Requests\BrandRequest $request){
         $data= $request->except(['_token','file','id']);
         $data['class_ids']=join(',',$data['class_ids']);
         $data['brand_en_name'] =strtoupper($data['brand_en_name']);
@@ -127,7 +127,7 @@ class BrandController extends Controller
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function update(Request $request){
+    public function update(Requests\BrandRequest $request){
 
         if(!$request->isMethod('post') || !$request->ajax()){
             abort(404,'访问错误.');

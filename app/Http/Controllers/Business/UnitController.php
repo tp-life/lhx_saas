@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Business;
 
 use App\Http\Controllers\BusinessController;
+use App\Http\Requests\Business\UnitRequest;
 use App\Models\Common\ClassificationModel;
 use App\Models\Common\UnitModel;
 use Illuminate\Http\Request;
@@ -30,7 +31,7 @@ class UnitController extends BusinessController
     /**
      * 添加
      */
-    public function store(Request $request){
+    public function store(UnitRequest $request){
         if(!$request->ajax()){
             abort(404,'非发访问');
         }
@@ -106,7 +107,7 @@ class UnitController extends BusinessController
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function update(Request $request){
+    public function update(UnitRequest $request){
 
         if(!$request->isMethod('post') || !$request->ajax()){
             abort(404,'访问错误.');

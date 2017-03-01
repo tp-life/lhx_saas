@@ -57,17 +57,29 @@ $(function () {
     })
 
     //提交表单
-    $("#demo_form").submit(function () {
-        $(this).ajaxSubmit(function (e) {
-            if (e.status == 1) {
-                showToastr('success', e.msg);
-                setTimeout(function () {
-                    window.location.href = goodsIndex;
-                }, 1500);
-            } else {
-                showToastr('error', e.msg);
+    $("#demo_form").submit(function(){
+        $(this).ajaxSubmit({success:function(e) {
+            if(e.status == 1){
+                showToastr('success',e.msg);
+                setTimeout(function(){
+                    window.location.href=goodsIndex;
+                },1500);
+            }else{
+                showToastr('error',e.msg);
             }
-        });
+        },error:function(response){
+            if (response.status == 422) {
+                var error = eval('(' + response.responseText + ')')
+                var errors = [];
+                var a = 0;
+                for (var i in error) {
+                    errors[a++] = error[i][0];
+                }
+                showToastr('error',errors.join("<br />"));
+            } else {
+                showToastr('error','提交失败');
+            }
+        }});
         return false;
     });
 

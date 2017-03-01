@@ -6,15 +6,13 @@ use Illuminate\Database\Eloquent\Model;
 class Order extends Model
 {
 	private $action = 'order';
-    //
-	public $table = 'orders';
-
+    protected $primaryKey = 'order_id';
 
 	public function getStatusTextAttribute(){
 		return self::getOrderStatusText($this->order_state);
 	}
 	public function getPayStatusTextAttribute(){
-		return self::getOrderStatusText($this->pay_state);
+		return self::getOrderPayStatusText($this->pay_state);
 	}
 
 	/**
@@ -73,4 +71,21 @@ class Order extends Model
 		return isset($d[$key]) ? $d[$key] : $d;
 	}
 
+    const _PAY_TYPE_XS = 1;
+    const _PAY_TYPE_XX = 2;
+    const _PAY_TYPE_SK = 3;
+    const _PAY_TYPE_XJ = 4;
+    public static function getOrderPayTypeText($pay_type = false)
+    {
+        static $pay_type_arr = [
+            self::_PAY_TYPE_XS=>'线上支付',
+            self::_PAY_TYPE_XX=>'线下支付',
+            self::_PAY_TYPE_SK=>'刷卡支付',
+            self::_PAY_TYPE_XJ=>'现金支付',
+        ];
+        if ($pay_type === false) {
+            return $pay_type_arr;
+        }
+        return isset($d[$pay_type]) ? $d[$pay_type] : '未知';
+    }
 }

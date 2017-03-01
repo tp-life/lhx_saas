@@ -96,6 +96,9 @@ Route::group(['prefix' => 'business','namespace' => 'Business','middleware' => [
 
     //收款方式设置
     require (__DIR__ . '/business/setting_payment_method.php');
+
+    //代客下单
+    require (__DIR__ . '/business/valet_order.php');
 });
 
 // 后台系统日志

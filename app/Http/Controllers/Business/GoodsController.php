@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Business;
 
+use App\Http\Requests\Business\GoodsRequest;
 use App\Models\Common\BrandModel;
 use App\Models\Common\BusinessInfo;
 use App\Models\Common\ClassattrModel;
@@ -137,7 +138,7 @@ class GoodsController extends BusinessController
         return view('business.goods.edit')->with($data);
     }
 
-    public function store(Request $request)
+    public function store(GoodsRequest $request)
     {
         if (!$request->isMethod('post') || !$request->ajax()) {
             abort(404, '非法访问');
@@ -191,7 +192,7 @@ class GoodsController extends BusinessController
     }
 
 
-    public function update(Request $request)
+    public function update(GoodsRequest $request)
     {
         if (!$request->isMethod('post') || !$request->ajax()) {
             abort(404, '非法访问');
@@ -368,7 +369,7 @@ class GoodsController extends BusinessController
         if(!$request->isMethod('post') || !$request->ajax()){
             abort(403,'非法访问');
         }
-        $ids = $request->input('ids');
+        $ids = $request->input('ids',0);
         $ids = is_array($ids)?$ids:[$ids];
         if(GoodsModel::where('is_on',GoodsModel::_SALF_ON)->whereIn('id',$ids)->update(['is_on'=>GoodsModel::_SALF_OFF,'is_top'=>GoodsModel::_GOODS_UNTOP])){
             return $this->success('商品下架成功');

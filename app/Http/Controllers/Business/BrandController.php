@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Business;
 
 use App\Http\Controllers\BusinessController;
+use App\Http\Requests\Business\BrandRequest;
 use App\Models\Common\BrandModel;
 use App\Models\Common\ClassificationModel;
 use Illuminate\Http\Request;
@@ -29,7 +30,7 @@ class BrandController extends BusinessController
     /**
      * 添加
      */
-    public function store(Request $request){
+    public function store(BrandRequest $request){
         $data= $request->except(['_token','file','id']);
         $data['class_ids']=join(',',$data['class_ids']);
         $data['business_id']=getBusinessId();
@@ -113,7 +114,7 @@ class BrandController extends BusinessController
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function update(Request $request){
+    public function update(BrandRequest $request){
 
         if(!$request->isMethod('post') || !$request->ajax()){
             abort(404,'访问错误.');

@@ -20,8 +20,32 @@ class OrdersRepositoryEloquent implements OrdersRepositoryInterface
     **/
     public function getOrderListBuySearch($start,$length,$search,$order)
 	{
-		$count = Order::where($search)->count();
-		$searchedOrders = Order::where($search)->offset($start)->limit($length)->orderBy('order_id','desc')->get();
+        $where = [];
+
+        if ($search['business_id']) {
+            $where[] = ['orders.business_id', '=', $search['business_id']];
+        }
+        if ($search['order_state']) {
+            $where[] = ['orders.order_state', '=', $search['order_state']];
+        }
+        if ($search['pay_state']) {
+            $where[] = ['orders.pay_state', '=', $search['pay_state']];
+        }
+        if ($search['keyword'] && $search['search_type']) {
+            $where[] = ['orders.'.$search['search_type'], 'like', "%{$search['keyword']}%"];
+        }
+
+        $orders = Order::where($where);
+        if ($search['created_at']) {
+            $orders = $orders->whereBetween('orders.created_at', explode('/', $search['created_at']));
+        }
+        if ($search['send_time']) {
+            $sendTime = explode('/', $search['send_time']);
+            $orders = $orders->whereBetween('orders.delivery_time', [strtotime($sendTime[0]), strtotime($sendTime[1])]);
+        }
+        $count = $orders->count();
+        $searchedOrders = $orders->select('orders.*')->orderBy('orders.'.$order['name'], $order['dir'])->offset($start)->limit($length)->get();
+
 		return compact('count','searchedOrders');
 
 	}

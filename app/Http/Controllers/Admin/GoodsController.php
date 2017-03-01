@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Requests\GoodsRequest;
 use App\Models\Common\BrandModel;
 use App\Models\Common\ClassattrModel;
 use App\Models\Common\ClassificationModel;
@@ -51,7 +52,7 @@ class GoodsController extends Controller
     /**
      * 添加
      */
-    public function store(Request $request){
+    public function store(GoodsRequest $request){
         if(!$request->ajax()){
             abort(404,'非发访问');
         }
@@ -208,7 +209,7 @@ class GoodsController extends Controller
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function update(Request $request){
+    public function update(GoodsRequest $request){
 
         if(!$request->isMethod('post') || !$request->ajax()){
             abort(404,'访问错误.');

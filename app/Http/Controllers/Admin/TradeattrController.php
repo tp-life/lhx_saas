@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Requests\TradeattrRequest;
 use App\Models\Common\ClassattrModel;
 use App\Models\Common\ClassificationModel;
 use Illuminate\Http\Request;
@@ -38,7 +39,7 @@ class tradeattrController extends Controller
     /**
      * 添加
      */
-    public function store(Request $request){
+    public function store(TradeattrRequest $request){
         $post = $request->all();
         $data=[];
         foreach ($post['attr_name'] as $key=>$val){
@@ -126,7 +127,7 @@ class tradeattrController extends Controller
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function update(Request $request){
+    public function update(TradeattrRequest $request){
 
         if(!$request->isMethod('post') || !$request->ajax()){
             abort(404,'访问错误.');

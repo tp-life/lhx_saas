@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Requests\TradeRequest;
 use App\Models\Common\BrandModel;
 use App\Models\Common\ClassificationModel;
 use Illuminate\Http\Request;
@@ -28,7 +29,7 @@ class TradeController extends Controller
     /**
      * 添加
      */
-    public function store(Request $request){
+    public function store(TradeRequest $request){
         $re = ClassificationModel::create($request->all());
         if($re->exists) {
             return $this->success('提交数据成功');
@@ -96,10 +97,13 @@ class TradeController extends Controller
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function update(Request $request){
+    public function update(TradeRequest $request){
 
         if(!$request->isMethod('post') || !$request->ajax()){
             abort(404,'访问错误.');
+        }
+        if(!$request->id){
+            return $this->error('参数错误');
         }
         if( ClassificationModel::where('id',$request->id)->update($request->except(['_token','file','id']))){
             return $this->success('更新成功');

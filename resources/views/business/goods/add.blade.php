@@ -336,6 +336,7 @@
     <script type="text/javascript" src="{{asset('vendors/jquery.form.js')}}"></script>
     <script type="text/javascript" src="{{asset('vendors/zTree/js/jquery.ztree.core.js')}}"></script>
     <script type="text/javascript" src="{{asset('vendors/zTree/js/jquery.ztree.excheck.js')}}"></script>
+    <script src="{{asset('vendors/layer/layer.js')}}"></script>
     <script src="{{asset('business/js/goods/goods.js')}}"></script>
     <script>
 

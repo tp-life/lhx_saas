@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Business;
 
 use App\Http\Controllers\BusinessController;
+use App\Http\Requests\Business\TradeattrRequest;
 use App\Models\Common\ClassattrModel;
 use App\Models\Common\ClassificationModel;
 use Illuminate\Http\Request;
@@ -38,7 +39,7 @@ class tradeattrController extends BusinessController
     /**
      * 添加
      */
-    public function store(Request $request){
+    public function store(TradeattrRequest $request){
         $post = $request->all();
         $data=[];
         $is_select = $request->input('is_select',ClassattrModel::_TEMPLATE_OFF);
@@ -138,7 +139,7 @@ class tradeattrController extends BusinessController
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function update(Request $request){
+    public function update(TradeattrRequest $request){
 
         if(!$request->isMethod('post') || !$request->ajax()){
             abort(404,'访问错误.');

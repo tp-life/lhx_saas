@@ -47,17 +47,30 @@
         $('#unit_submit').on('click',function(){
             $('#unit_from').submit();
         });
-        $('#unit_from').on('submit',function(){
-            $(this).ajaxSubmit(function(e) {
+       
+        $("#unit_from").submit(function(){
+            $(this).ajaxSubmit({success:function(e) {
                 if(e.status == 1){
                     showToastr('success',e.msg);
                     setTimeout(function(){
                         window.location.href='{{url('admin/unit/index')}}';
-                    },500);
+                    },1500);
                 }else{
                     showToastr('error',e.msg);
                 }
-            });
+            },error:function(response){
+                if (response.status == 422) {
+                    var error = eval('(' + response.responseText + ')')
+                    var errors = [];
+                    var a = 0;
+                    for (var i in error) {
+                        errors[a++] = error[i][0];
+                    }
+                    showToastr('error',errors.join("<br />"));
+                } else {
+                    showToastr('error','提交失败');
+                }
+            }});
             return false;
         });
     })
