@@ -1,6 +1,18 @@
 @extends('layouts.admin')
 
-
+@section('css')
+    <style>
+        .hadlder{
+            text-align: center;line-height: 94px;
+        }
+        .hadlder a{
+            margin: 0 20px;
+        }
+        td{
+            vertical-align: middle!important;
+        }
+    </style>
+@endsection
 @section('content')
 
     <div class="row wrapper border-bottom white-bg page-heading">
@@ -31,21 +43,26 @@
 
         <div class="row">
             <div class="panel panel-default" style="border-top: none;border-radius:0">
-                <div class="panel-heading">
-                    <div class="col-sm-4">
-                        订单编号:{{ $order->order_sn  }}
-                        <br/>
-                        状态：{{ $order->order_state  }}
-                        <br/>
-                        收货人：{{ $order->buyer_name  }}
-                        <br/>
-                        收货人电话:{{ $order->buyer_phone  }}
-                        <br/>
-                        收货人地址:
-                        <br/>
-                        订单备注：
+                <div class="panel-heading" style="font-size: 14px;overflow: auto">
+                    <div class="row">
+                        <div class="col-lg-9">
+                            <div class="row">
+                                <div class="col-lg-2">{{ $order->order_sn  }} 【<span style="color: red">{{$order->getStatusTextAttribute()}}</span>】</div>
+                                <div class="col-lg-2">{{ $order->created_at  }}</div>
+                            </div>
+                            <div style="line-height: 25px">【收货信息】 收货人：{{$order->buyer_address_info['user_name']}} 联系电话：{{$order->buyer_address_info['user_mobile']}} 收货地址：{{$order->buyer_address_info['pca']}}{{$order->buyer_address_info['address']}}</div>
+                            <div style="line-height: 25px">订单备注：{{ $order->order_note  }}</div>
+                            <div style="line-height: 25px">下单备注：{{ $order->buyer_note  }}</div>
+                        </div>
+                        <div class="col-lg-3 hadlder">
+                            {{--针对线上付款的，发货是发生在已付款之后的；线下付款的：发货是发生在订单审核通过之后的--}}
+                            @if (($order->order_state == \App\Models\Common\Order::_ORDER_STATE_CONFIRM && $order->payment_type == \App\Models\Common\Order::_PAY_TYPE_XS && $order->pay_state == \App\Models\Common\Order::_ORDER_PAY_STATE_FINISH) || ($order->order_state == \App\Models\Common\Order::_ORDER_STATE_CONFIRM && $order->payment_type != \App\Models\Common\Order::_PAY_TYPE_XS))
+                                <a class="btn btn-xb btn-info tooltips" data-placement="top"  href="{{url('business/order/review',['id'=>$order->order_id])}}" data-toggle="modal" data-target="#myModal">发货</a>
+                            @endif
+                        </div>
                     </div>
-                    <div class="col-sm-4"><a class="btn btn-primary" type="button"  href="http://b2b.com/business/adv_recommend_class/4/edit" data-toggle="modal" data-target="#myModal">发货</a></div>
+
+
                 </div>
                 <div class="panel-body">
                     <table class="table table-hover">

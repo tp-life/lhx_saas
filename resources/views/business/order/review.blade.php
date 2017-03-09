@@ -13,8 +13,18 @@
                         <div class="form-group">
                             <label class="col-sm-2 control-label">审核</label>
                             <div class="col-sm-10">
-                                <label>通过:<input type="radio" class="flat" name="status"  value="1" checked /></label>
-                                <label>作废:<input type="radio" class="flat" name="status"  value="0" /></label>
+                                <div class="col-sm-3 col-md-3">
+                                    <div class="i-checks">
+                                        <label> <input type="radio" name="status" checked value="1"> <i></i>&nbsp;
+                                            通过 </label>
+                                    </div>
+                                </div>
+                                <div class="col-sm-3 col-md-3">
+                                    <div class="i-checks">
+                                        <label> <input type="radio" name="status" value="0"> <i></i>&nbsp;
+                                            作废 </label>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="hr-line-dashed"></div>
@@ -35,39 +45,55 @@
     </div>
 </div>
 <script>
+    $('.i-checks').iCheck({
+        checkboxClass: 'icheckbox_square-green',
+        radioClass: 'iradio_square-green'
+    }).on('ifChecked', function (event) {
+//
+    });
     $('#addForm').submit(function(){
-        layer.load(2);
-        $.ajax({
-            type:'POST',
-            url:$('#addForm').attr('action'),
-            data:$('#addForm').serialize(),
-            dataType:'json',
-            success:function (response) {
-                layer.closeAll('loading');
-                if (response.status == 1) {
-                    location.reload();
-                    layer.msg(response.msg, {icon: 1},function(){
+        var status = $('input[name=status]:checked').val();
+        var msg = '请再次确认是否要作废该订单？';
+        if (status == '1') {
+            msg = '审核之后订单商品不可编辑，是否继续？';
+        }
+        layer.confirm(msg, {
+            btn: ['确定','取消'] //按钮
+        }, function(){
+            layer.load(2);
+            $.ajax({
+                type:'POST',
+                url:$('#addForm').attr('action'),
+                data:$('#addForm').serialize(),
+                dataType:'json',
+                success:function (response) {
+                    layer.closeAll('loading');
+                    if (response.status == 1) {
+                        location.reload();
+                        layer.msg(response.msg, {icon: 1},function(){
 
-                    });
-                } else {
-                    layer.msg(response.msg ? response.msg : '提交失败', function(){});
-                }
-            },
-            error:function(response){
-                layer.closeAll('loading');
-                if (response.status == 422) {
-                    var error = eval('(' + response.responseText + ')')
-                    var errors = [];
-                    var a = 0;
-                    for (var i in error) {
-                        errors[a++] = error[i][0];
+                        });
+                    } else {
+                        layer.msg(response.msg ? response.msg : '提交失败', function(){});
                     }
-                    layer.msg(errors.join("<br />"), function(){});
-                } else {
-                    layer.msg('提交失败', function(){});
+                },
+                error:function(response){
+                    layer.closeAll('loading');
+                    if (response.status == 422) {
+                        var error = eval('(' + response.responseText + ')')
+                        var errors = [];
+                        var a = 0;
+                        for (var i in error) {
+                            errors[a++] = error[i][0];
+                        }
+                        layer.msg(errors.join("<br />"), function(){});
+                    } else {
+                        layer.msg('提交失败', function(){});
+                    }
                 }
-            }
+            });
         });
+
         return false;
     });
 </script>

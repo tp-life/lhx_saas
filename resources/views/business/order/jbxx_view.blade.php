@@ -1,6 +1,7 @@
 @extends('layouts.admin')
 
 @section('css')
+    <link href="{{asset('vendors/iCheck/custom.css')}}" rel="stylesheet">
     <style>
         .hadlder{
             text-align: center;line-height: 44px;
@@ -55,10 +56,12 @@
                             <div style="line-height: 25px">{{ $order->retail_business_name  }}</div>
                         </div>
                         <div class="col-lg-3 hadlder">
-                            @if ($order->order_state == \App\Models\Common\Order::_ORDER_STATE_DEFAULT && in_array($order->payment_type, [\App\Models\Common\Order::_PAY_TYPE_XX, \App\Models\Common\Order::_PAY_TYPE_SK, \App\Models\Common\Order::_PAY_TYPE_XJ]))
+                            {{--只有线下支付才有审核--}}
+                            @if ($order->order_state == \App\Models\Common\Order::_ORDER_STATE_DEFAULT && $order->payment_type != \App\Models\Common\Order::_PAY_TYPE_XS)
                                 <a class="btn btn-xb btn-info tooltips" data-placement="top"  href="{{url('business/order/review',['id'=>$order->order_id])}}" data-toggle="modal" data-target="#myModal">审核</a>
                             @endif
-                            @if($order->pay_state == \App\Models\Common\Order::_ORDER_PAY_STATE_DEFAULT)
+                            {{--线上支付，未支付可编辑，线下支付，未审核可编辑--}}
+                            @if($order->pay_state == \App\Models\Common\Order::_ORDER_PAY_STATE_DEFAULT && $order->order_state == \App\Models\Common\Order::_ORDER_STATE_DEFAULT)
                                     <a class="btn btn-xb btn-info tooltips" data-placement="top"  href="{{url('business/order/'.$order->order_id.'/edit')}}">编辑</a>
                             @endif
                         </div>
@@ -113,7 +116,7 @@
                         </tr>
                         <tr>
                             <td colspan="4">
-                                收货地址：{{$order->buyer_address_info['user_name']}}，{{$order->buyer_address_info['user_mobile']}}，{{$order->buyer_address_info['pca']}}，{{$order->buyer_address_info['address']}}
+                                收货地址：{{$order->buyer_address_info['user_name']}}，{{$order->buyer_address_info['user_mobile']}}，{{$order->buyer_address_info['pca']}}{{$order->buyer_address_info['address']}}
                             </td>
                             <td>
                                 <a class="btn btn-xs btn-info tooltips" data-placement="top" data-original-title="" href="{{url('business/order/address',['id'=>$order->order_id])}}" data-toggle="modal" data-target="#myModal"><i class="fa fa-edit"></i>编辑收货地址</a>
@@ -158,6 +161,7 @@
     </div>
 @endsection
 @section('js')
+    <script type="text/javascript" src="{{asset('vendors/iCheck/icheck.min.js')}}"></script>
     <script src="{{asset('vendors/layer/layer.js')}}"></script>
     <script>
         // 关闭modal清空内容

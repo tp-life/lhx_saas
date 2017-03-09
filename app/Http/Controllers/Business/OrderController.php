@@ -2,8 +2,10 @@
 namespace App\Http\Controllers\Business;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Business\ReceiveAddressRequest;
+use App\Models\Business\BusinessPaymentModel;
 use App\Models\Common\Order;
 use App\Models\Common\OrderGoods;
+use App\Models\Common\OrderOfflinePay;
 use App\Service\Admin\OrderService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -109,6 +111,9 @@ class OrderController extends Controller
         ])->firstOrFail();
         $data['order']->buyer_address_info = unserialize($data['order']->buyer_address_info);
 		$data['orderGoods'] = OrderGoods::where('order_id',$id)->get();
+        if ($flag == 'skjl' && $data['order']->payment_type != Order::_PAY_TYPE_XS) {
+            $data['offlinePay'] = OrderOfflinePay::where('order_id', $id)->get();
+        }
 		return view('business.order.'.$flag.'_view',$data);
     }
 
@@ -307,18 +312,10 @@ class OrderController extends Controller
         $data['flag_a'] = $flag_a;
         $data['order'] = Order::where([
             ['order_id',$id],
+            ['order_state', Order::_ORDER_STATE_DEFAULT],
+            ['pay_state', Order::_ORDER_PAY_STATE_DEFAULT],
             ['business_id',$this->business_id]
-        ])->where(function ($query) { //线上支付的，未付款前
-            $query->orWhere([
-                ['pay_state', Order::_ORDER_PAY_STATE_DEFAULT],
-                ['payment_type', Order::_PAY_TYPE_XS]
-            ])->orWhere(function ($query) { //线上支付的，未付款前
-                $query->where([
-                    ['pay_state', Order::_ORDER_PAY_STATE_DEFAULT],
-                    ['payment_type', '<>', Order::_PAY_TYPE_XS]
-                ]);
-            });
-        })->firstOrFail();
+        ])->firstOrFail();
         $data['orderGoods'] = OrderGoods::where('order_id',$id)->get();
         return view('business.order.edit', $data);
     }
@@ -331,18 +328,10 @@ class OrderController extends Controller
         $order_goods = OrderGoods::findOrFail($id);
         $order = Order::where([
             ['order_id',$order_goods->order_id],
+            ['order_state', Order::_ORDER_STATE_DEFAULT],
+            ['pay_state', Order::_ORDER_PAY_STATE_DEFAULT],
             ['business_id',$this->business_id]
-        ])->where(function ($query) { //线上支付的，未付款前
-            $query->orWhere([
-                ['pay_state', Order::_ORDER_PAY_STATE_DEFAULT],
-                ['payment_type', Order::_PAY_TYPE_XS]
-            ])->orWhere(function ($query) { //线上支付的，未付款前
-                $query->where([
-                    ['pay_state', Order::_ORDER_PAY_STATE_DEFAULT],
-                    ['payment_type', '<>', Order::_PAY_TYPE_XS]
-                ]);
-            });
-        })->firstOrFail();
+        ])->firstOrFail();
         //查询该订单是否还有其他商品
         $count = OrderGoods::where('order_id', $order_goods->order_id)->count();
         if ($count == 1) {
@@ -364,18 +353,10 @@ class OrderController extends Controller
     {
         $order = Order::where([
             ['order_id',$id],
-            ['business_id',$this->business_id]
-        ])->where(function ($query) { //线上支付的，未付款前
-            $query->orWhere([
-                ['pay_state', Order::_ORDER_PAY_STATE_DEFAULT],
-                ['payment_type', Order::_PAY_TYPE_XS]
-            ])->orWhere(function ($query) { //线上支付的，未付款前
-                $query->where([
-                    ['pay_state', Order::_ORDER_PAY_STATE_DEFAULT],
-                    ['payment_type', '<>', Order::_PAY_TYPE_XS]
-                ]);
-            });
-        })->firstOrFail();
+            ['business_id',$this->business_id],
+            ['order_state', Order::_ORDER_STATE_DEFAULT],
+            ['pay_state', Order::_ORDER_PAY_STATE_DEFAULT]
+        ])->firstOrFail();
         $goods = $request->input('goodsNum', []);
         if (empty($goods)) {
             flash_info(false ,'保存成功', '保存失败');
@@ -401,10 +382,14 @@ class OrderController extends Controller
             OrderGoods::where('order_id', $id)->whereNotIn('id', array_keys($goods))->delete();
             $goods_price = $goods_price/100;
             $order->goods_amount = $goods_price;
-            $order->shipping_fee = number_format($request->input('shipping_fee', 0), 2, '.', '');
-            $order->discount_amount = number_format($request->input('discount_amount', 0), 2, '.', '');
+            $order->shipping_fee = abs(number_format($request->input('shipping_fee', 0), 2, '.', ''));
+            $order->discount_amount = abs(number_format($request->input('discount_amount', 0), 2, '.', ''));
             $order_amount = ($order->goods_amount*100 + $order->shipping_fee*100 - $order->discount_amount*100)/100;
             $order->order_amount = number_format($order_amount, 2, '.', '');
+            if ($order->order_amount <= 0) {
+                flash_info(false ,'保存成功', '保存失败-订单金额不能小于0');
+                return redirect('business/order/'.$id);
+            }
             if (!$order->save()) {
                 throw new Exception('保存失败');
             }
